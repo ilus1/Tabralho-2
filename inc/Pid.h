@@ -16,7 +16,6 @@ class Pid {
     double erro_total, erro_anterior;
 
     public:
-
     Pid();
     void pid_configura_constantes(double Kp_, double Ki_, double Kd_);
     void pid_atualiza_referencia(float referencia_);

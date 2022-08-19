@@ -1,4 +1,4 @@
-#include "../include/pid.h"
+#include "../inc/pid.h"
 
 const int sinal_de_controle_MAX = 100;
 const int sinal_de_controle_MIN = -100;
