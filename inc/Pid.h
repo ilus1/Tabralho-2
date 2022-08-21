@@ -4,10 +4,9 @@
 class Pid {
 
     private:
-    const int sinal_de_controle_MAX;
-    const int sinal_de_controle_MIN;
-    const int T;
-
+    int sinal_de_controle_MAX;
+    int sinal_de_controle_MIN;
+    int T;
     double saida_medida, sinal_de_controle;
     double referencia;
     double Kp;
