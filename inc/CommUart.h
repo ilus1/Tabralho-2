@@ -11,7 +11,7 @@ class CommUart {
     int uart0_filestream;
     struct termios options;
     unsigned char *send_buffer;
-    unsigned char *read_buffer;
+    unsigned *read_buffer;
 
     public:
     CommUart();
@@ -21,7 +21,7 @@ class CommUart {
     void receive(int msgSize);
     void setMsgToSend(unsigned char *message);
     void stop();
-    unsigned char * getMsgRead();
+    unsigned * getMsgRead();
 };
 
 #endif

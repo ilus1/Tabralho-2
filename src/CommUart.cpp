@@ -10,7 +10,7 @@ CommUart::CommUart() {}
 CommUart::CommUart(int max_msg_size) {
     this->uart0_filestream = -1;
     this->send_buffer = new unsigned char[max_msg_size];
-    this->read_buffer = new unsigned char[max_msg_size];
+    this->read_buffer = new unsigned[max_msg_size];
 }
 
 void CommUart::setup() {
@@ -30,7 +30,7 @@ void CommUart::setup() {
 
 void CommUart::send(int msgSize) {
     int bytes_written = write(this->uart0_filestream, &this->send_buffer[0], msgSize);
-    if (bytes_written < 0) {
+    if (bytes_written <= 0) {
         printf("Erro ao enviar dados\n");
         return;
     }
@@ -38,7 +38,7 @@ void CommUart::send(int msgSize) {
 
 void CommUart::receive(int msgSize) {
     int bytes_read = read(this->uart0_filestream, (void *)this->read_buffer, msgSize);
-    if (bytes_read < 0) {
+    if (bytes_read <= 0) {
         printf("Erro ao receber dados\n");
         return;
     }
@@ -48,7 +48,7 @@ void CommUart::setMsgToSend(unsigned char *message) {
     this->send_buffer = message;
 }
 
-unsigned char * CommUart::getMsgRead() {
+unsigned * CommUart::getMsgRead() {
     return this->read_buffer;
 }
 

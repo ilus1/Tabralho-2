@@ -19,10 +19,11 @@ int main(void) {
     uart.setup();
 
     unsigned char msg_to_send[SEND_MSG_SIZE] = { ADDRESS, CODE_23, SCODE_C1, MATRICULA[0], MATRICULA[1], MATRICULA[2], MATRICULA[3] };
+    printf("%s\n", msg_to_send);
     uart.setMsgToSend(msg_to_send);
     uart.send(SEND_MSG_SIZE);
 
-    delay(1000);
+    sleep(1);
     uart.receive(RECV_MSG_SIZE);
     unsigned char *msg_read = uart.getMsgRead();
     switch (msg_read[2]) {
