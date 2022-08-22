@@ -1,14 +1,16 @@
 #include "../inc/CommUart.h"
+
 #include <stdio.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <termios.h>
 
-CommUart::CommUart(int msgSize) {
+CommUart::CommUart() {}
+
+CommUart::CommUart(int max_msg_size) {
     this->uart0_filestream = -1;
-    this->msgSize = msgSize;
-    this->send_buffer = new unsigned char[msgSize];
-    this->read_buffer = new unsigned char[msgSize];
+    this->send_buffer = new unsigned char[max_msg_size];
+    this->read_buffer = new unsigned char[max_msg_size];
 }
 
 void CommUart::setup() {
@@ -26,16 +28,16 @@ void CommUart::setup() {
     tcsetattr(this->uart0_filestream, TCSANOW, &this->options);
 }
 
-void CommUart::send() {
-    int bytes_written = write(this->uart0_filestream, &this->send_buffer[0], this->msgSize);
+void CommUart::send(int msgSize) {
+    int bytes_written = write(this->uart0_filestream, &this->send_buffer[0], msgSize);
     if (bytes_written < 0) {
         printf("Erro ao enviar dados\n");
         return;
     }
 }
 
-void CommUart::receive() {
-    int bytes_read = read(this->uart0_filestream, (void *)this->read_buffer, this->msgSize);
+void CommUart::receive(int msgSize) {
+    int bytes_read = read(this->uart0_filestream, (void *)this->read_buffer, msgSize);
     if (bytes_read < 0) {
         printf("Erro ao receber dados\n");
         return;

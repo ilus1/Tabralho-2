@@ -46,7 +46,7 @@ reset: clean
 ################################## BUILD ##################################
 
 $(EXEC): $(OBJS)
-	$(CC) $^ -o $@ $(LIBS)
+	$(CC) $^ -o $@
 
 $(DIR_OBJ)/main.o: $(DIR_SOURCE)/main.cpp
 	@mkdir -p $(DIR_OBJ)

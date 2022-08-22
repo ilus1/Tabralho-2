@@ -4,21 +4,21 @@
 class Pid {
 
     private:
-    int sinal_de_controle_MAX;
-    int sinal_de_controle_MIN;
+    int control_signal_MAX;
+    int control_signal_MIN;
     int T;
-    double saida_medida, sinal_de_controle;
-    double referencia;
+    double measured_output, control_signal;
+    double reference_temp;
     double Kp;
     double Ki;
     double Kd;
-    double erro_total, erro_anterior;
+    double total_error, previous_error;
 
     public:
     Pid();
-    void pid_configura_constantes(double Kp_, double Ki_, double Kd_);
-    void pid_atualiza_referencia(float referencia_);
-    double pid_controle(double saida_medida);
+    void setup(double Kp_, double Ki_, double Kd_);
+    void set_reference_temp(float temp);
+    double pid_control(double measured_output);
 };
 
 #endif /* PID_H_ */

@@ -1,55 +1,55 @@
 #include "../inc/Pid.h"
 
 Pid::Pid () {
-    this->sinal_de_controle_MAX = 100;
-    this->sinal_de_controle_MIN = -100;
+    this->control_signal_MAX = 100;
+    this->control_signal_MIN = -100;
     this->T = 1;
-    this->erro_total = 0.0;
-    this->erro_anterior = 0.0;
-    this->referencia = 0.0;
+    this->total_error = 0.0;
+    this->previous_error = 0.0;
+    this->reference_temp = 0.0;
 }
 
-void Pid::pid_configura_constantes(double Kp_, double Ki_, double Kd_){
+void Pid::setup(double Kp_, double Ki_, double Kd_){
     this->Kp = Kp_;
     this->Ki = Ki_;
     this->Kd = Kd_;
 }
 
-void Pid::pid_atualiza_referencia(float referencia_){
-    this->referencia = (double) referencia_;
+void Pid::set_reference_temp(float temp){
+    this->reference_temp = (double) temp;
 }
 
-double Pid::pid_controle(double saida_medida){
+double Pid::pid_control(double measured_output){
 
-    double erro = this->referencia - saida_medida;
+    double error = this->reference_temp - measured_output;
 
-    this->erro_total += erro;
+    this->total_error += error;
 
-    if (this->erro_total >= this->sinal_de_controle_MAX)
+    if (this->total_error >= this->control_signal_MAX)
     {
-        this->erro_total = this->sinal_de_controle_MAX;
+        this->total_error = this->control_signal_MAX;
     }
-    else if (this->erro_total <= this->sinal_de_controle_MIN)
+    else if (this->total_error <= this->control_signal_MIN)
     {
-        this->erro_total = this->sinal_de_controle_MIN;
-    }
-
-    double delta_error = erro - this->erro_anterior;
-
-    this->sinal_de_controle = this->Kp*erro +
-        (this->Ki * this->T)*this->erro_total +
-        (this->Kd/this->T)*delta_error;
-
-    if (this->sinal_de_controle >= this->sinal_de_controle_MAX)
-    {
-        this->sinal_de_controle = this->sinal_de_controle_MAX;
-    }
-    else if (this->sinal_de_controle <= this->sinal_de_controle_MIN)
-    {
-        this->sinal_de_controle = this->sinal_de_controle_MIN;
+        this->total_error = this->control_signal_MIN;
     }
 
-    this->erro_anterior = erro;
+    double delta_errorr = error - this->previous_error;
 
-    return this->sinal_de_controle;
+    this->control_signal = this->Kp*error +
+        (this->Ki * this->T)*this->total_error +
+        (this->Kd/this->T)*delta_errorr;
+
+    if (this->control_signal >= this->control_signal_MAX)
+    {
+        this->control_signal = this->control_signal_MAX;
+    }
+    else if (this->control_signal <= this->control_signal_MIN)
+    {
+        this->control_signal = this->control_signal_MIN;
+    }
+
+    this->previous_error = error;
+
+    return this->control_signal;
 }

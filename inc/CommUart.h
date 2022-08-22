@@ -1,5 +1,5 @@
-#ifndef COMM_UART_H_
-#define COMM_UART_H_
+#ifndef COMMUART_H_
+#define COMMUART_H_
 
 #include <stdio.h>
 #include <unistd.h>
@@ -8,17 +8,17 @@
 
 class CommUart {
     private:
-    int msgSize;
     int uart0_filestream;
     struct termios options;
     unsigned char *send_buffer;
     unsigned char *read_buffer;
 
     public:
-    CommUart(int msgSize);
+    CommUart();
+    CommUart(int max_msg_size);
     void setup();
-    void send();
-    void receive();
+    void send(int msgSize);
+    void receive(int msgSize);
     void setMsgToSend(unsigned char *message);
     void stop();
     unsigned char * getMsgRead();
