@@ -10,7 +10,7 @@ CommUart::CommUart() {}
 CommUart::CommUart(int max_msg_size) {
     this->uart0_filestream = -1;
     this->send_buffer = new unsigned char[max_msg_size];
-    this->read_buffer = new unsigned[max_msg_size];
+    this->read_buffer = new unsigned char[max_msg_size];
 }
 
 void CommUart::setup() {
@@ -48,7 +48,7 @@ void CommUart::setMsgToSend(unsigned char *message) {
     this->send_buffer = message;
 }
 
-unsigned * CommUart::getMsgRead() {
+unsigned char * CommUart::getMsgRead() {
     return this->read_buffer;
 }
 
