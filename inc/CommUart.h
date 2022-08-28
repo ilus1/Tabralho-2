@@ -11,17 +11,15 @@ class CommUart {
     private:
     int uart0_filestream;
     struct termios options;
-    unsigned char *send_buffer;
-    unsigned char *read_buffer;
+    unsigned char read_buffer[7];
 
     public:
     CommUart();
-    CommUart(int max_msg_size);
     void setup();
     void send(int msgSize, unsigned char *message);
-    void receive(int msgSize);
+    void receive();
     void stop();
-    unsigned char * getMsgRead();
+    int getInternalTemp();
 };
 
 #endif
