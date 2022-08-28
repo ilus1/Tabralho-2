@@ -19,7 +19,9 @@ class CommUart {
     void send(int msgSize, unsigned char *message);
     void receive();
     void stop();
-    int getInternalTemp();
+    float getInternalTemp();
+    float getReferenceTemp();
+    int getUserInput();
 };
 
 #endif

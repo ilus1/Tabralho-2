@@ -64,7 +64,7 @@ void CommUart::stop() {
     close(this->uart0_filestream);
 }
 
-int CommUart::getInternalTemp() {
+float CommUart::getInternalTemp() {
     unsigned char message[9] = { ADDRESS, CODE_23, SCODE_C1, ID[0], ID[1], ID[2], ID[3] };
     uint16_t crc = computeCrc(message, 7);
 
@@ -74,6 +74,31 @@ int CommUart::getInternalTemp() {
     sleep(1);
 
     this->receive();
-    return this->read_buffer[4];
+    return this->read_buffer[3];
 }
 
+float CommUart::getReferenceTemp() {
+    unsigned char message[9] = { ADDRESS, CODE_23, SCODE_C2, ID[0], ID[1], ID[2], ID[3] };
+    uint16_t crc = computeCrc(message, 7);
+
+    memcpy(&message[7], &crc, sizeof(crc));
+    this->send(9, message);
+
+    sleep(1);
+
+    this->receive();
+    return this->read_buffer[3];
+}
+
+int CommUart::getUserInput() {
+    unsigned char message[9] = { ADDRESS, CODE_23, SCODE_C3, ID[0], ID[1], ID[2], ID[3] };
+    uint16_t crc = computeCrc(message, 7);
+
+    memcpy(&message[7], &crc, sizeof(crc));
+    this->send(9, message);
+
+    sleep(1);
+
+    this->receive();
+    return this->read_buffer[3];
+}
