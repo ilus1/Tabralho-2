@@ -6,6 +6,14 @@
 #include <fcntl.h>
 #include <termios.h>
 
+const unsigned char ADDRESS = 0x01;
+const unsigned char CODE_16 = 0x16;
+const unsigned char CODE_23 = 0x23;
+const unsigned char SCODE_C1 = 0xC1;
+const unsigned char SCODE_C2 = 0xC2;
+const unsigned char SCODE_C3 = 0xC3;
+const unsigned char ID[4] = { 0x06, 0x05, 0x06, 0x05 };
+
 CommUart::CommUart() {}
 
 CommUart::CommUart(int max_msg_size) {
@@ -17,7 +25,7 @@ CommUart::CommUart(int max_msg_size) {
 void CommUart::setup() {
     this->uart0_filestream = open("/dev/serial0", O_RDWR | O_NOCTTY | O_NDELAY);
     if (this->uart0_filestream == -1) {
-        printf("Erro ao abrir o arquivo filestream\n");
+        printf("Failed to open filestream\n");
         return;
     }
     tcgetattr(this->uart0_filestream, &this->options);
@@ -29,13 +37,13 @@ void CommUart::setup() {
     tcsetattr(this->uart0_filestream, TCSANOW, &this->options);
 }
 
-void CommUart::send(int msgSize, unsigned char * message) {
-    printf("mostrando mensagem: ");
-	for (int i = 0; i < 9; ++i) printf("%X ", message[i]);
-    printf("%s ", message);
-    printf("\n");
+void CommUart::send(int msgSize, unsigned char *message) {
+    // printf("mostrando mensagem: ");
+	// for (int i = 0; i < 9; ++i) printf("%X ", message[i]);
+    // printf("%s ", message);
+    // printf("\n");
 
-    int bytes_written = write(this->uart0_filestream, message, msgSize);
+    int bytes_written = write(this->uart0_filestream, message, 9);
     if (bytes_written <= 0) {
         printf("Erro ao enviar dados: %d\n", bytes_written);
         return;
@@ -50,15 +58,15 @@ void CommUart::receive(int msgSize) {
     }
 }
 
-void CommUart::setMsgToSend(unsigned char *message) {
-    memcpy(&this->send_buffer, message, 9);
-}
-
 unsigned char * CommUart::getMsgRead() {
     return this->read_buffer;
 }
 
 void CommUart::stop() {
     close(this->uart0_filestream);
+}
+
+void CommUart::getInternalTemp() {
+
 }
 

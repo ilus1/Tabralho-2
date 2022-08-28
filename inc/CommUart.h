@@ -20,7 +20,6 @@ class CommUart {
     void setup();
     void send(int msgSize, unsigned char *message);
     void receive(int msgSize);
-    void setMsgToSend(unsigned char *message);
     void stop();
     unsigned char * getMsgRead();
 };
