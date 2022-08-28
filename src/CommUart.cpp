@@ -1,5 +1,6 @@
 #include "../inc/CommUart.h"
 
+#include <cstring>
 #include <stdio.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -28,10 +29,15 @@ void CommUart::setup() {
     tcsetattr(this->uart0_filestream, TCSANOW, &this->options);
 }
 
-void CommUart::send(int msgSize) {
-    int bytes_written = write(this->uart0_filestream, &this->send_buffer[0], msgSize);
+void CommUart::send(int msgSize, unsigned char * message) {
+    printf("mostrando mensagem: ");
+	for (int i = 0; i < 9; ++i) printf("%X ", message[i]);
+    printf("%s ", message);
+    printf("\n");
+
+    int bytes_written = write(this->uart0_filestream, message, msgSize);
     if (bytes_written <= 0) {
-        printf("Erro ao enviar dados\n");
+        printf("Erro ao enviar dados: %d\n", bytes_written);
         return;
     }
 }
@@ -45,7 +51,7 @@ void CommUart::receive(int msgSize) {
 }
 
 void CommUart::setMsgToSend(unsigned char *message) {
-    this->send_buffer = message;
+    memcpy(&this->send_buffer, message, 9);
 }
 
 unsigned char * CommUart::getMsgRead() {

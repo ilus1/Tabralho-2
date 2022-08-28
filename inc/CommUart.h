@@ -1,6 +1,7 @@
 #ifndef COMMUART_H_
 #define COMMUART_H_
 
+#include <cstring>
 #include <stdio.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -17,7 +18,7 @@ class CommUart {
     CommUart();
     CommUart(int max_msg_size);
     void setup();
-    void send(int msgSize);
+    void send(int msgSize, unsigned char *message);
     void receive(int msgSize);
     void setMsgToSend(unsigned char *message);
     void stop();
