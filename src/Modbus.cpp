@@ -38,6 +38,7 @@ unsigned char * Modbus::internalTempMessage() {
     uint16_t crc = crcCalculator.computeCrc(message, 7);
 
     memcpy(&message[7], &crc, sizeof(crc));
+
     return message;
 }
 
@@ -46,6 +47,7 @@ unsigned char * Modbus::referenceTempMessage() {
     uint16_t crc = crcCalculator.computeCrc(message, 7);
 
     memcpy(&message[7], &crc, sizeof(crc));
+
     return message;
 }
 
@@ -54,36 +56,18 @@ unsigned char * Modbus::userInputMessage() {
     uint16_t crc = crcCalculator.computeCrc(message, 7);
 
     memcpy(&message[7], &crc, sizeof(crc));
+
     return message;
 }
 
-unsigned char * Modbus::sendIntSignalMessage(unsigned char *signal) {
-    unsigned char *message = this->createMessage(CODE_16, SCODE_D1, 13);
-
-    for(int i = 0; i < 4; i++) message[i + 6] = signal[i];
-    uint16_t crc = crcCalculator.computeCrc(message, 11);
-
-    memcpy(&message[11], &crc, sizeof(crc));
-    return message;
-}
-
-unsigned char * Modbus::sendFloatSignalMessage(unsigned char *signal) {
-    unsigned char *message = this->createMessage(CODE_16, SCODE_D2, 13);
-
-    for(int i = 0; i < 4; i++) message[i + 6] = signal[i];
-    uint16_t crc = crcCalculator.computeCrc(message, 11);
-
-    memcpy(&message[11], &crc, sizeof(crc));
-    return message;
-}
 
 unsigned char * Modbus::sendSystemStateMessage(unsigned char state) {
     unsigned char *message = this->createMessage(CODE_16, SCODE_D3, 10);
 
     message[7] = state;
     uint16_t crc = crcCalculator.computeCrc(message, 8);
-
     memcpy(&message[8], &crc, sizeof(crc));
+
     return message;
 }
 
@@ -93,8 +77,8 @@ unsigned char * Modbus::sendSystemStatusMessage(unsigned char state) {
 
     message[7] = state;
     uint16_t crc = crcCalculator.computeCrc(message, 8);
-
     memcpy(&message[8], &crc, sizeof(crc));
+
     return message;
 }
 
@@ -104,7 +88,28 @@ unsigned char * Modbus::sendTimerMessage(unsigned char *time) {
 
     for(int i = 0; i < 4; i++) message[i + 6] = time[i];
     uint16_t crc = crcCalculator.computeCrc(message, 11);
-
     memcpy(&message[11], &crc, sizeof(crc));
+
     return message;
 }
+
+unsigned char * Modbus::sendIntSignalMessage(int signal) {
+    unsigned char *message = this->createMessage(CODE_16, SCODE_D1, 13);
+
+    memcpy(&message[7], &signal, sizeof(signal));
+    uint16_t crc = crcCalculator.computeCrc(message, 11);
+    memcpy(&message[11], &crc, sizeof(crc));
+
+    return message;
+}
+
+unsigned char * Modbus::sendFloatSignalMessage(float signal) {
+    unsigned char *message = this->createMessage(CODE_16, SCODE_D2, 13);
+
+    memcpy(&message[7], &signal, sizeof(signal));
+    uint16_t crc = crcCalculator.computeCrc(message, 11);
+    memcpy(&message[11], &crc, sizeof(crc));
+
+    return message;
+}
+

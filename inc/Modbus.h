@@ -13,11 +13,11 @@ class Modbus {
     unsigned char * internalTempMessage();
     unsigned char * referenceTempMessage();
     unsigned char * userInputMessage();
-    unsigned char * sendIntSignalMessage(unsigned char *signal);
-    unsigned char * sendFloatSignalMessage(unsigned char *signal);
     unsigned char * sendSystemStateMessage(unsigned char state);
     unsigned char * sendSystemStatusMessage(unsigned char status);
     unsigned char * sendTimerMessage(unsigned char *timer);
+    unsigned char * sendIntSignalMessage(int signal);
+    unsigned char * sendFloatSignalMessage(float signal);
 };
 
 #endif

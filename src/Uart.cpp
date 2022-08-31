@@ -86,3 +86,23 @@ int Uart::getUserInput() {
     memcpy(&userInput, &this->read_buffer[3], sizeof(int));
     return userInput;
 }
+
+void Uart::sendControlSignal(int signal) {
+    send(9, modbus.sendIntSignalMessage(signal));
+}
+
+void Uart::sendReferenceSignal(float signal) {
+    send(9, modbus.sendFloatSignalMessage(signal));
+}
+
+void Uart::sendSystemState(unsigned char state) {
+    send(9, modbus.sendSystemStateMessage(state));
+}
+
+void Uart::sendSystemStatus(unsigned char status) {
+    send(9, modbus.sendSystemStatusMessage(status));
+}
+
+void Uart::sendTimerSignal(unsigned char *signal) {
+    send(9, modbus.sendTimerMessage(signal));
+}

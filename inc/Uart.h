@@ -27,6 +27,12 @@ class Uart {
     float getInternalTemp();
     float getReferenceTemp();
     int getUserInput();
+    void sendControlSignal(int signal);
+    void sendReferenceSignal(float signal);
+    void sendReferenceSignal(unsigned char *signal);
+    void sendSystemState(unsigned char state);
+    void sendSystemStatus(unsigned char status);
+    void sendTimerSignal(unsigned char *signal);
 };
 
 #endif
