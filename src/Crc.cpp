@@ -1,12 +1,8 @@
-/*
- * crc16.c
- *
- *  Created on: 18/03/2014
- *      Author: Renato Coral Sampaio
- */
-#include "../inc/crc.h"
+#include "../inc/Crc.h"
 
-uint16_t CRC16(uint16_t crc, char data){
+Crc::Crc() {}
+
+uint16_t Crc::CRC16(uint16_t crc, char data){
     const uint16_t tbl[256] = {
         0x0000, 0xC0C1, 0xC181, 0x0140, 0xC301, 0x03C0, 0x0280, 0xC241,
         0xC601, 0x06C0, 0x0780, 0xC741, 0x0500, 0xC5C1, 0xC481, 0x0440,
@@ -43,7 +39,7 @@ uint16_t CRC16(uint16_t crc, char data){
     return ((crc & 0xFF00) >> 8) ^ tbl[(crc & 0x00FF) ^ (data & 0x00FF)];
 }
 
-uint16_t computeCrc(unsigned char *commands, int size) {
+uint16_t Crc::computeCrc(unsigned char *commands, int size) {
     uint16_t crc = 0;
     for(int i=0;i<size;i++) {
         crc = CRC16(crc, commands[i]);

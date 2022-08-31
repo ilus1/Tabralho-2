@@ -1,5 +1,7 @@
-#ifndef COMMUART_H_
-#define COMMUART_H_
+#ifndef UART_H_
+#define UART_H_
+
+#include "../inc/Modbus.h"
 
 #include <cstring>
 #include <stdio.h>
@@ -7,14 +9,17 @@
 #include <fcntl.h>
 #include <termios.h>
 
-class CommUart {
+class Uart {
     private:
     int uart0_filestream;
     struct termios options;
-    unsigned char read_buffer[7];
+    unsigned char read_buffer[100];
+    Modbus modbus;
+    Crc crc;
+
 
     public:
-    CommUart();
+    Uart();
     void setup();
     void send(int msgSize, unsigned char *message);
     void receive();

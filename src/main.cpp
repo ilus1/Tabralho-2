@@ -1,12 +1,12 @@
 #include <cstring>
 
-#include "../inc/CommUart.h"
+#include "../inc/Uart.h"
 
 const int SEND_MSG_SIZE = 9;
 
 int main(void) {
 
-    CommUart uart;
+    Uart uart;
     uart.setup();
 
     sleep(1);
