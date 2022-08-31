@@ -10,7 +10,9 @@ int main(void) {
     uart.setup();
 
     sleep(1);
-    printf("Temperatura interna: %d\n", uart.getInternalTemp());
+    printf("Temperatura interna: %f\n", uart.getInternalTemp());
+    printf("Temperatura referencia: %f\n", uart.getReferenceTemp());
+    printf("Input usuario: %d\n", uart.getUserInput());
     uart.stop();
     return 0;
 }

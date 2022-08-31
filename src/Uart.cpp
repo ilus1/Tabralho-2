@@ -11,30 +11,30 @@
 const int READ_MSG_SIZE = 100;
 
 Uart::Uart() {
-    this->uart0_filestream = -1;
-    this->modbus = Modbus();
+    uart0_filestream = -1;
+    modbus = Modbus();
 }
 
 void Uart::setup() {
-    this->uart0_filestream = open("/dev/serial0", O_RDWR | O_NOCTTY | O_NDELAY);
+    uart0_filestream = open("/dev/serial0", O_RDWR | O_NOCTTY | O_NDELAY);
 
-    if (this->uart0_filestream == -1) {
+    if (uart0_filestream == -1) {
         printf("Failed to open filestream\n");
         return;
     }
 
-    tcgetattr(this->uart0_filestream, &this->options);
-    this->options.c_cflag = B9600 | CS8 | CLOCAL | CREAD;
-    this->options.c_iflag = IGNPAR;
-    this->options.c_oflag = 0;
-    this->options.c_lflag = 0;
+    tcgetattr(uart0_filestream, &options);
+    options.c_cflag = B9600 | CS8 | CLOCAL | CREAD;
+    options.c_iflag = IGNPAR;
+    options.c_oflag = 0;
+    options.c_lflag = 0;
 
-    tcflush(this->uart0_filestream, TCIFLUSH);
-    tcsetattr(this->uart0_filestream, TCSANOW, &this->options);
+    tcflush(uart0_filestream, TCIFLUSH);
+    tcsetattr(uart0_filestream, TCSANOW, &options);
 }
 
 void Uart::send(int msgSize, unsigned char *message) {
-    int bytes_written = write(this->uart0_filestream, message, msgSize);
+    int bytes_written = write(uart0_filestream, message, msgSize);
     if (bytes_written <= 0) {
         printf("Failed to send data\n");
         return;
@@ -42,7 +42,7 @@ void Uart::send(int msgSize, unsigned char *message) {
 }
 
 void Uart::receive() {
-    int bytes_read = read(this->uart0_filestream, (void *)this->read_buffer, READ_MSG_SIZE);
+    int bytes_read = read(uart0_filestream, (void *)read_buffer, READ_MSG_SIZE);
     if (bytes_read <= 0) {
         printf("Failed to receive data\n");
         return;
@@ -50,32 +50,39 @@ void Uart::receive() {
 }
 
 void Uart::stop() {
-    close(this->uart0_filestream);
+    close(uart0_filestream);
 }
 
 float Uart::getInternalTemp() {
-    this->send(9, modbus.internalTempMessage());
+    float internalTemp;
+    unsigned char *message = modbus.internalTempMessage();
 
+    this->send(9, message);
     sleep(1);
-
     this->receive();
-    return this->read_buffer[3];
+
+    memcpy(&internalTemp, &this->read_buffer[3], sizeof(float));
+    return internalTemp;
 }
 
 float Uart::getReferenceTemp() {
-    this->send(9, modbus.referenceTempMessage());
+    float referenceTemp;
 
+    send(9, modbus.referenceTempMessage());
     sleep(1);
+    receive();
 
-    this->receive();
-    return this->read_buffer[3];
+    memcpy(&referenceTemp, &this->read_buffer[3], sizeof(float));
+    return referenceTemp;
 }
 
 int Uart::getUserInput() {
-    this->send(9, modbus.userInputMessage());
+    int userInput;
 
+    send(9, modbus.userInputMessage());
     sleep(1);
+    receive();
 
-    this->receive();
-    return this->read_buffer[3];
+    memcpy(&userInput, &this->read_buffer[3], sizeof(int));
+    return userInput;
 }
