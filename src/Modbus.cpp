@@ -61,7 +61,7 @@ unsigned char * Modbus::userInputMessage() {
 }
 
 
-unsigned char * Modbus::sendSystemStateMessage(unsigned char state) {
+unsigned char * Modbus::setSystemStateMessage(unsigned char state) {
     unsigned char *message = this->createMessage(CODE_16, SCODE_D3, 10);
 
     message[7] = state;
@@ -72,7 +72,7 @@ unsigned char * Modbus::sendSystemStateMessage(unsigned char state) {
 }
 
 
-unsigned char * Modbus::sendSystemStatusMessage(unsigned char state) {
+unsigned char * Modbus::setSystemStatusMessage(unsigned char state) {
     unsigned char *message = this->createMessage(CODE_16, SCODE_D5, 10);
 
     message[7] = state;

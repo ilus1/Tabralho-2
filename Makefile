@@ -42,11 +42,13 @@ clean:
 reset: clean
 	rm -f $(EXEC)
 
+run: reset all
+	./Airfryer
 
 ################################## BUILD ##################################
 
 $(EXEC): $(OBJS)
-	$(CC) $^ -o $@
+	$(CC) $^ -o $@ $(LIBS)
 
 $(DIR_OBJ)/main.o: $(DIR_SOURCE)/main.cpp
 	@mkdir -p $(DIR_OBJ)

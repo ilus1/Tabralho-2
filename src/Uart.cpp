@@ -88,21 +88,21 @@ int Uart::getUserInput() {
 }
 
 void Uart::sendControlSignal(int signal) {
-    send(9, modbus.sendIntSignalMessage(signal));
+    send(13, modbus.sendIntSignalMessage(signal));
 }
 
 void Uart::sendReferenceSignal(float signal) {
-    send(9, modbus.sendFloatSignalMessage(signal));
+    send(13, modbus.sendFloatSignalMessage(signal));
 }
 
-void Uart::sendSystemState(unsigned char state) {
-    send(9, modbus.sendSystemStateMessage(state));
+void Uart::setSystemState(unsigned char state) {
+    send(10, modbus.setSystemStateMessage(state));
 }
 
-void Uart::sendSystemStatus(unsigned char status) {
-    send(9, modbus.sendSystemStatusMessage(status));
+void Uart::setSystemStatus(unsigned char status) {
+    send(10, modbus.setSystemStatusMessage(status));
 }
 
 void Uart::sendTimerSignal(unsigned char *signal) {
-    send(9, modbus.sendTimerMessage(signal));
+    send(13, modbus.sendTimerMessage(signal));
 }
