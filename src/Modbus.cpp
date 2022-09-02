@@ -8,9 +8,9 @@ const unsigned char SCODE_C1 = 0xC1;
 const unsigned char SCODE_C2 = 0xC2;
 const unsigned char SCODE_C3 = 0xC3;
 const unsigned char SCODE_D1 = 0xD1;
-const unsigned char SCODE_D2 = 0xD2;
+// const unsigned char SCODE_D2 = 0xD2;
 const unsigned char SCODE_D3 = 0xD3;
-const unsigned char SCODE_D4 = 0xD4;
+// const unsigned char SCODE_D4 = 0xD4;
 const unsigned char SCODE_D5 = 0xD5;
 const unsigned char SCODE_D6 = 0xD6;
 const unsigned char ID[4] = { 0x06, 0x05, 0x06, 0x05 };
@@ -103,13 +103,13 @@ unsigned char * Modbus::sendIntSignalMessage(int signal) {
     return message;
 }
 
-unsigned char * Modbus::sendFloatSignalMessage(float signal) {
-    unsigned char *message = this->createMessage(CODE_16, SCODE_D2, 13);
+// unsigned char * Modbus::sendFloatSignalMessage(float signal) {
+//     unsigned char *message = this->createMessage(CODE_16, SCODE_D2, 13);
 
-    memcpy(&message[7], &signal, sizeof(signal));
-    uint16_t crc = crcCalculator.computeCrc(message, 11);
-    memcpy(&message[11], &crc, sizeof(crc));
+//     memcpy(&message[7], &signal, sizeof(signal));
+//     uint16_t crc = crcCalculator.computeCrc(message, 11);
+//     memcpy(&message[11], &crc, sizeof(crc));
 
-    return message;
-}
+//     return message;
+// }
 

@@ -1,6 +1,7 @@
 #include <cstring>
 #include <wiringPi.h>
 #include <softPwm.h>
+#include<signal.h>
 
 #include "../inc/Uart.h"
 #include "../inc/Pid.h"
@@ -20,26 +21,32 @@ void setStatus(double activationValue) {
 }
 
 void pinSetup() {
-    pinMode(FAN, OUTPUT); 
+    pinMode(FAN, OUTPUT);
     softPwmCreate(FAN, 0, 100);
 
     pinMode(HEATER, OUTPUT);
     softPwmCreate(HEATER, 0, 100);
 }
 
+void stop(boolean *isSystemRunning) {
+    *isSystemRynning = false;
+}
+
 
 int main(void) {
     Uart uart;
-    Pid pid = Pid();
+    Pid pid;
     float referenceTemp;
     float internalTemp;
     double activationValue;
+    boolean isSystemRunning = true, isSystemON = false, ;
+    signal(SIGINT, stop(*isSystemRunning));
 
     uart.setup();
     pid.setup(50.0, 0.2, 300.0);
     if (wiringPiSetup() != -1) pinSetup();
 
-    while(1) {
+    while(isSystemRunning) {
         referenceTemp = uart.getReferenceTemp();
         internalTemp = uart.getInternalTemp();
 
@@ -50,6 +57,7 @@ int main(void) {
         uart.sendControlSignal((int) activationValue);
         sleep(1);
     }
+    printf("Shutting down...\n");
 
     return 0;
 }

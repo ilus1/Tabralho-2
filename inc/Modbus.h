@@ -17,7 +17,7 @@ class Modbus {
     unsigned char * setSystemStatusMessage(unsigned char status);
     unsigned char * sendTimerMessage(unsigned char *timer);
     unsigned char * sendIntSignalMessage(int signal);
-    unsigned char * sendFloatSignalMessage(float signal);
+    // unsigned char * sendFloatSignalMessage(float signal);
 };
 
 #endif

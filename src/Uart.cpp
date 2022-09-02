@@ -58,7 +58,7 @@ float Uart::getInternalTemp() {
     unsigned char *message = modbus.internalTempMessage();
 
     this->send(9, message);
-    sleep(1);
+    usleep(50000);
     this->receive();
 
     memcpy(&internalTemp, &this->read_buffer[3], sizeof(float));
@@ -69,7 +69,7 @@ float Uart::getReferenceTemp() {
     float referenceTemp;
 
     send(9, modbus.referenceTempMessage());
-    sleep(1);
+    usleep(50000);
     receive();
 
     memcpy(&referenceTemp, &this->read_buffer[3], sizeof(float));
@@ -80,7 +80,7 @@ int Uart::getUserInput() {
     int userInput;
 
     send(9, modbus.userInputMessage());
-    sleep(1);
+    usleep(50000);
     receive();
 
     memcpy(&userInput, &this->read_buffer[3], sizeof(int));
