@@ -10,7 +10,7 @@ const unsigned char SCODE_C3 = 0xC3;
 const unsigned char SCODE_D1 = 0xD1;
 // const unsigned char SCODE_D2 = 0xD2;
 const unsigned char SCODE_D3 = 0xD3;
-// const unsigned char SCODE_D4 = 0xD4;
+const unsigned char SCODE_D4 = 0xD4;
 const unsigned char SCODE_D5 = 0xD5;
 const unsigned char SCODE_D6 = 0xD6;
 const unsigned char ID[4] = { 0x06, 0x05, 0x06, 0x05 };
@@ -83,10 +83,10 @@ unsigned char * Modbus::setSystemStatusMessage(unsigned char state) {
 }
 
 
-unsigned char * Modbus::sendTimerMessage(unsigned char *time) {
+unsigned char * Modbus::sendTimerMessage(int timer) {
     unsigned char *message = this->createMessage(CODE_16, SCODE_D6, 13);
 
-    for(int i = 0; i < 4; i++) message[i + 6] = time[i];
+    memcpy(&message[7], &message, sizeof(timer));
     uint16_t crc = crcCalculator.computeCrc(message, 11);
     memcpy(&message[11], &crc, sizeof(crc));
 
