@@ -86,7 +86,7 @@ unsigned char * Modbus::setSystemStatusMessage(unsigned char state) {
 unsigned char * Modbus::sendTimerMessage(int timer) {
     unsigned char *message = this->createMessage(CODE_16, SCODE_D6, 13);
 
-    memcpy(&message[7], &message, sizeof(timer));
+    memcpy(&message[7], &timer, sizeof(timer));
     uint16_t crc = crcCalculator.computeCrc(message, 11);
     memcpy(&message[11], &crc, sizeof(crc));
 

@@ -23,6 +23,7 @@ class Uart {
     void setup();
     void send(int msgSize, unsigned char *message);
     void receive();
+    void receive(int msgSize);
     void stop();
     float getInternalTemp();
     float getReferenceTemp();

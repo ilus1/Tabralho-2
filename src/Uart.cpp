@@ -49,6 +49,14 @@ void Uart::receive() {
     }
 }
 
+void Uart::receive(int msgSize) {
+    int bytes_read = read(uart0_filestream, (void *)read_buffer, msgSize);
+    if (bytes_read <= 0) {
+        printf("Failed to receive data\n");
+        return;
+    }
+}
+
 void Uart::stop() {
     close(uart0_filestream);
 }
@@ -58,7 +66,7 @@ float Uart::getInternalTemp() {
     unsigned char *message = modbus.internalTempMessage();
 
     this->send(9, message);
-    usleep(40000);
+    usleep(100000);
     this->receive();
 
     memcpy(&internalTemp, &this->read_buffer[3], sizeof(float));
@@ -69,7 +77,7 @@ float Uart::getReferenceTemp() {
     float referenceTemp;
 
     send(9, modbus.referenceTempMessage());
-    usleep(40000);
+    usleep(100000);
     receive();
 
     memcpy(&referenceTemp, &this->read_buffer[3], sizeof(float));
@@ -80,8 +88,8 @@ int Uart::getUserInput() {
     int userInput;
 
     send(9, modbus.userInputMessage());
-    usleep(40000);
-    receive();
+    usleep(10000);
+    receive(9);
 
     memcpy(&userInput, &this->read_buffer[3], sizeof(int));
     return userInput;
@@ -94,24 +102,24 @@ void Uart::sendControlSignal(int signal) {
 
 void Uart::setSystemState(unsigned char state) {
     send(10, modbus.setSystemStateMessage(state));
-    usleep(40000);
+    usleep(100000);
     receive();
 }
 
 // void Uart::sendReferenceSignal(float signal) {
 //     send(13, modbus.sendFloatSignalMessage(signal));
-//     usleep(40000);
+//     usleep(100000);
 //     receive();
 // }
 
 void Uart::setSystemStatus(unsigned char status) {
     send(10, modbus.setSystemStatusMessage(status));
-    usleep(40000);
+    usleep(100000);
     receive();
 }
 
 void Uart::sendTimerSignal(int timer) {
     send(13, modbus.sendTimerMessage(timer));
-    usleep(40000);
+    usleep(100000);
     receive();
 }
