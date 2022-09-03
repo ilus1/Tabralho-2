@@ -44,11 +44,11 @@ void cleanSystemState(Uart uart) {
 }
 
 void heatUp(Uart uart) {
-    //float referenceTemp;
+    float referenceTemp;
     float internalTemp;
 
     setStatus(100.0);
-    while(internalTemp > 25) {
+    while(systemWorking && referenceTemp > internalTemp + (referenceTemp / 20)) {
         //referenceTemp = uart.getReferenceTemp();
         internalTemp = uart.getInternalTemp();
         sleep(1);
@@ -57,12 +57,12 @@ void heatUp(Uart uart) {
 }
 
 void coolDown(Uart uart) {
-    float referenceTemp;
+    //float referenceTemp;
     float internalTemp;
 
     setStatus(-100.0);
-    while(referenceTemp > internalTemp + (referenceTemp / 20)) {
-        referenceTemp = uart.getReferenceTemp();
+    while(systemWorking && internalTemp > 25) {
+        //referenceTemp = uart.getReferenceTemp();
         internalTemp = uart.getInternalTemp();
         sleep(1);
     }
@@ -156,7 +156,7 @@ int main(void) {
                 }
                 break;
             default:
-                usleep(30000);
+                usleep(500000);
         }
     }
 

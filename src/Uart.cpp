@@ -8,7 +8,7 @@
 #include <termios.h>
 
 
-const int READ_MSG_SIZE = 7;
+const int READ_MSG_SIZE = 9;
 
 Uart::Uart() {
     uart0_filestream = -1;
