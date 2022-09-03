@@ -27,9 +27,9 @@ void setStatus(double intensity) {
 
 void pinSetup() {
     pinMode(FAN, OUTPUT);
-    softPwmCreate(FAN, 0, 100);
-
     pinMode(HEATER, OUTPUT);
+
+    softPwmCreate(FAN, 0, 100);
     softPwmCreate(HEATER, 0, 100);
 }
 
@@ -47,6 +47,7 @@ void cleanSystemState(Uart uart) {
 
 void heatUp(Uart uart) {
     float referenceTemp = uart.getReferenceTemp();
+    while (referenceTemp == 0) uart.getReferenceTemp();
     float internalTemp = uart.getInternalTemp();
 
     setStatus(100.0);
@@ -94,14 +95,6 @@ void temperatureControl(Uart uart, Pid pid, bool isSystemRunning, int *timer) {
         *timer -= 1;
     }
     uart.sendTimerSignal(0);
-}
-
-void watchUserInputs(int *userInput, Uart uart, bool *isSystemRunning) {
-    while(systemWorking) {
-        if (!*isSystemRunning) *userInput = uart.getUserInput();
-        else usleep(100000);
-    }
-    std::exit(EXIT_SUCCESS);
 }
 
 
