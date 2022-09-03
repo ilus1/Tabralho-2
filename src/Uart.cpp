@@ -97,6 +97,8 @@ int Uart::getUserInput() {
 
 void Uart::sendControlSignal(int signal) {
     send(13, modbus.sendIntSignalMessage(signal));
+    usleep(100000);
+    receive();
 }
 
 

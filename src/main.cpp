@@ -43,12 +43,38 @@ void cleanSystemState(Uart uart) {
     uart.sendTimerSignal(0);
 }
 
-void temperatureControl(Uart uart, Pid pid, bool isSystemRunning) {
+void heatUp(Uart uart) {
+    //float referenceTemp;
+    float internalTemp;
+
+    setStatus(100.0);
+    while(internalTemp > 25) {
+        //referenceTemp = uart.getReferenceTemp();
+        internalTemp = uart.getInternalTemp();
+        sleep(1);
+    }
+
+}
+
+void coolDown(Uart uart) {
+    float referenceTemp;
+    float internalTemp;
+
+    setStatus(-100.0);
+    while(referenceTemp > internalTemp + (referenceTemp / 20)) {
+        referenceTemp = uart.getReferenceTemp();
+        internalTemp = uart.getInternalTemp();
+        sleep(1);
+    }
+}
+
+
+void temperatureControl(Uart uart, Pid pid, bool isSystemRunning, int *timer) {
     float referenceTemp;
     float internalTemp;
     double intensity;
 
-    while(systemWorking && isSystemRunning) {
+    while(systemWorking && isSystemRunning && *timer > 0) {
         referenceTemp = uart.getReferenceTemp();
         internalTemp = uart.getInternalTemp();
 
@@ -74,7 +100,7 @@ int main(void) {
     Uart uart;
     Pid pid;
     bool isSystemON = false, isSystemRunning = false;
-    int timer = 0;//, userInput = 0;
+    int timer = 0;
     signal(SIGINT, stop);
 
     uart.setup();
@@ -102,7 +128,9 @@ int main(void) {
                 if(isSystemON) {
                     isSystemRunning = true;
                     uart.setSystemStatus(1);
-                    temperatureControl(uart, pid, isSystemRunning);
+                    heatUp(uart);
+                    temperatureControl(uart, pid, isSystemRunning, &timer);
+                    coolDown(uart);
                 }
                 break;
             case 4:
