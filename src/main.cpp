@@ -42,7 +42,7 @@ void cleanSystemState(Uart uart) {
     uart.receive();
     uart.setSystemState(0);
     uart.setSystemStatus(0);
-    uart.sendTimerSignal(0, true);
+    uart.sendTimerSignal(0);
 }
 
 void heatUp(Uart uart) {
@@ -89,11 +89,11 @@ void temperatureControl(Uart uart, Pid pid, bool isSystemRunning, int *timer) {
         printf("Referencia %f\tInterna: %f\tSinal de controle: %lf\tTimer: %d\n", referenceTemp, internalTemp, intensity, *timer);
         setStatus(intensity);
         uart.sendControlSignal((int) intensity);
-        if(*timer % 60 == 0) uart.sendTimerSignal(*timer/60, true);
+        if(*timer % 60 == 0) uart.sendTimerSignal(*timer/60);
         sleep(1);
         *timer -= 1;
     }
-    uart.sendTimerSignal(0, true);
+    uart.sendTimerSignal(0);
 }
 
 void watchUserInputs(int *userInput, Uart uart, bool *isSystemRunning) {
@@ -148,13 +148,13 @@ int main(void) {
             case 5:
                 printf("Case 5\n");
                 timer += 60;
-                uart.sendTimerSignal(timer/60, true);
+                uart.sendTimerSignal(timer/60);
                 break;
             case 6:
                 printf("Case 6\n");
                 if (timer <= 60) timer = 0;
                 else timer -= 60;
-                uart.sendTimerSignal(timer/60, false);
+                uart.sendTimerSignal(timer/60);
                 break;
             default:
                 usleep(100000);

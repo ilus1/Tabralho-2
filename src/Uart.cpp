@@ -109,7 +109,6 @@ void Uart::setSystemStatus(unsigned char status) {
     // receive();
 }
 
-void Uart::sendTimerSignal(int timer, bool teste) {
+void Uart::sendTimerSignal(int timer) {
     send(13, modbus.sendTimerMessage(timer));
-    if (teste) receive();
 }

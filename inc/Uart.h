@@ -32,7 +32,7 @@ class Uart {
     void sendReferenceSignal(unsigned char *signal);
     void setSystemState(unsigned char state);
     void setSystemStatus(unsigned char status);
-    void sendTimerSignal(int timer, bool teste);
+    void sendTimerSignal(int timer);
 };
 
 #endif
