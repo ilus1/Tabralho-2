@@ -42,12 +42,10 @@ void cleanSystemState(Uart uart) {
     uart.receive();
     uart.setSystemState(0);
     uart.setSystemStatus(0);
-    uart.sendTimerSignal(0);
+    uart.sendTimerSignal(0, true);
 }
 
 void heatUp(Uart uart) {
-    // uart.receive();
-    // uart.receive();
     float referenceTemp = uart.getReferenceTemp();
     float internalTemp = uart.getInternalTemp();
 
@@ -91,11 +89,11 @@ void temperatureControl(Uart uart, Pid pid, bool isSystemRunning, int *timer) {
         printf("Referencia %f\tInterna: %f\tSinal de controle: %lf\tTimer: %d\n", referenceTemp, internalTemp, intensity, *timer);
         setStatus(intensity);
         uart.sendControlSignal((int) intensity);
-        if(*timer % 60 == 0) uart.sendTimerSignal(*timer/60);
+        if(*timer % 60 == 0) uart.sendTimerSignal(*timer/60, true);
         sleep(1);
         *timer -= 1;
     }
-    uart.sendTimerSignal(0);
+    uart.sendTimerSignal(0, true);
 }
 
 void watchUserInputs(int *userInput, Uart uart, bool *isSystemRunning) {
@@ -123,55 +121,43 @@ int main(void) {
     while(systemWorking) {
         switch(uart.getUserInput()) {
             case 1:
-                if(!isSystemON) {
-                    printf("Case 1\n");
-                    isSystemON = true;
-                    uart.setSystemState(1);
-                }
+                printf("Case 1\n");
+                isSystemON = true;
+                uart.setSystemState(1);
                 break;
             case 2:
-                if(isSystemON) {
-                    printf("Case 2\n");
-                    isSystemON = false;
-                    uart.setSystemState(0);
-                    isSystemRunning = false;
-                    uart.setSystemStatus(0);
-                }
+                printf("Case 2\n");
+                isSystemON = false;
+                uart.setSystemState(0);
+                isSystemRunning = false;
+                uart.setSystemStatus(0);
                 break;
             case 3: 
                 printf("Case 3\n");
-                if(isSystemON) {
-                    isSystemRunning = true;
-                    uart.setSystemStatus(1);
-                    heatUp(uart);
-                    temperatureControl(uart, pid, isSystemRunning, &timer);
-                    coolDown(uart);
-                }
+                isSystemRunning = true;
+                uart.setSystemStatus(1);
+                heatUp(uart);
+                temperatureControl(uart, pid, isSystemRunning, &timer);
+                coolDown(uart);
                 break;
             case 4:
                 printf("Case 4\n");
-                if(isSystemON && isSystemRunning) {
-                    isSystemRunning = false;
-                    uart.setSystemStatus(0);
-                }
+                isSystemRunning = false;
+                uart.setSystemStatus(0);
                 break;
             case 5:
-                if(isSystemON && !isSystemRunning) {
-                    printf("Case 5\n");
-                    timer += 60;
-                    uart.sendTimerSignal(timer/60);
-                }
+                printf("Case 5\n");
+                timer += 60;
+                uart.sendTimerSignal(timer/60, true);
                 break;
             case 6:
-                if(isSystemON && !isSystemRunning) {
-                    printf("Case 6\n");
-                    if (timer <= 60) timer = 0;
-                    else timer -= 60;
-                    uart.sendTimerSignal(timer/60);
-                }
+                printf("Case 6\n");
+                if (timer <= 60) timer = 0;
+                else timer -= 60;
+                uart.sendTimerSignal(timer/60, false);
                 break;
             default:
-                usleep(500000);
+                usleep(100000);
         }
     }
 

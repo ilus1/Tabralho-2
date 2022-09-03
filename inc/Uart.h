@@ -22,7 +22,7 @@ class Uart {
     Uart();
     void setup();
     void send(int msgSize, unsigned char *message);
-    void receive();
+    int receive();
     void stop();
     float getInternalTemp();
     float getReferenceTemp();
@@ -32,7 +32,7 @@ class Uart {
     void sendReferenceSignal(unsigned char *signal);
     void setSystemState(unsigned char state);
     void setSystemStatus(unsigned char status);
-    void sendTimerSignal(int timer);
+    void sendTimerSignal(int timer, bool teste);
 };
 
 #endif

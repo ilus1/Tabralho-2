@@ -42,12 +42,14 @@ void Uart::send(int msgSize, unsigned char *message) {
     }
 }
 
-void Uart::receive() {
+int Uart::receive() {
+    usleep(100000);
     int bytes_read = read(uart0_filestream, (void *)read_buffer, READ_MSG_SIZE);
     if (bytes_read <= 0) {
         printf("Failed to receive data\n");
-        return;
+        return 0;
     }
+    return bytes_read;
 }
 
 void Uart::stop() {
@@ -59,11 +61,9 @@ float Uart::getInternalTemp() {
     unsigned char *message = modbus.internalTempMessage();
 
     this->send(9, message);
-    usleep(100000);
     this->receive();
 
     memcpy(&internalTemp, &this->read_buffer[3], sizeof(float));
-    this->read_buffer = new unsigned char[READ_MSG_SIZE];
     return internalTemp;
 }
 
@@ -71,11 +71,9 @@ float Uart::getReferenceTemp() {
     float referenceTemp;
 
     send(9, modbus.referenceTempMessage());
-    usleep(100000);
     receive();
 
     memcpy(&referenceTemp, &this->read_buffer[3], sizeof(float));
-    this->read_buffer = new unsigned char[READ_MSG_SIZE];
     return referenceTemp;
 }
 
@@ -83,7 +81,6 @@ int Uart::getUserInput() {
     int userInput;
 
     send(9, modbus.userInputMessage());
-    usleep(100000);
     receive();
 
     memcpy(&userInput, &this->read_buffer[3], sizeof(int));
@@ -93,35 +90,26 @@ int Uart::getUserInput() {
 
 void Uart::sendControlSignal(int signal) {
     send(13, modbus.sendIntSignalMessage(signal));
-    usleep(100000);
-    receive();
-    this->read_buffer = new unsigned char[READ_MSG_SIZE];
+    // receive();
 }
 
 
 void Uart::setSystemState(unsigned char state) {
     send(10, modbus.setSystemStateMessage(state));
-    usleep(100000);
     receive();
-    this->read_buffer = new unsigned char[READ_MSG_SIZE];
 }
 
 // void Uart::sendReferenceSignal(float signal) {
 //     send(13, modbus.sendFloatSignalMessage(signal));
-//     usleep(100000);
 //     receive();
 // }
 
 void Uart::setSystemStatus(unsigned char status) {
     send(10, modbus.setSystemStatusMessage(status));
-    usleep(100000);
-    receive();
-    this->read_buffer = new unsigned char[READ_MSG_SIZE];
+    // receive();
 }
 
-void Uart::sendTimerSignal(int timer) {
+void Uart::sendTimerSignal(int timer, bool teste) {
     send(13, modbus.sendTimerMessage(timer));
-    usleep(100000);
-    receive();
-    this->read_buffer = new unsigned char[READ_MSG_SIZE];
+    if (teste) receive();
 }
