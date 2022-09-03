@@ -13,7 +13,7 @@ class Uart {
     private:
     int uart0_filestream;
     struct termios options;
-    unsigned char read_buffer[100];
+    unsigned char *read_buffer;
     Modbus modbus;
     Crc crc;
 

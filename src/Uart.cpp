@@ -13,6 +13,7 @@ const int READ_MSG_SIZE = 9;
 Uart::Uart() {
     uart0_filestream = -1;
     modbus = Modbus();
+    this->read_buffer = new unsigned char[READ_MSG_SIZE];
 }
 
 void Uart::setup() {
@@ -62,6 +63,7 @@ float Uart::getInternalTemp() {
     this->receive();
 
     memcpy(&internalTemp, &this->read_buffer[3], sizeof(float));
+    this->read_buffer = new unsigned char[READ_MSG_SIZE];
     return internalTemp;
 }
 
@@ -73,6 +75,7 @@ float Uart::getReferenceTemp() {
     receive();
 
     memcpy(&referenceTemp, &this->read_buffer[3], sizeof(float));
+    this->read_buffer = new unsigned char[READ_MSG_SIZE];
     return referenceTemp;
 }
 
@@ -80,10 +83,11 @@ int Uart::getUserInput() {
     int userInput;
 
     send(9, modbus.userInputMessage());
-    usleep(10000);
+    usleep(100000);
     receive();
 
     memcpy(&userInput, &this->read_buffer[3], sizeof(int));
+    this->read_buffer = new unsigned char[READ_MSG_SIZE];
     return userInput;
 }
 
@@ -91,6 +95,7 @@ void Uart::sendControlSignal(int signal) {
     send(13, modbus.sendIntSignalMessage(signal));
     usleep(100000);
     receive();
+    this->read_buffer = new unsigned char[READ_MSG_SIZE];
 }
 
 
@@ -98,6 +103,7 @@ void Uart::setSystemState(unsigned char state) {
     send(10, modbus.setSystemStateMessage(state));
     usleep(100000);
     receive();
+    this->read_buffer = new unsigned char[READ_MSG_SIZE];
 }
 
 // void Uart::sendReferenceSignal(float signal) {
@@ -110,10 +116,12 @@ void Uart::setSystemStatus(unsigned char status) {
     send(10, modbus.setSystemStatusMessage(status));
     usleep(100000);
     receive();
+    this->read_buffer = new unsigned char[READ_MSG_SIZE];
 }
 
 void Uart::sendTimerSignal(int timer) {
     send(13, modbus.sendTimerMessage(timer));
     usleep(100000);
     receive();
+    this->read_buffer = new unsigned char[READ_MSG_SIZE];
 }

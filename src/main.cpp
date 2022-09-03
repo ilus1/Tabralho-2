@@ -2,18 +2,19 @@
 #include <wiringPi.h>
 #include <softPwm.h>
 #include <signal.h>
-#include <thread>
 #include <stdlib.h>
 
 #include "../inc/Uart.h"
 #include "../inc/Pid.h"
+#include "../inc/bme280.h"
+#include "../inc/linux_userspace.h"
 
-
-const int SEND_MSG_SIZE = 9;
 const int HEATER = 4;
 const int FAN = 5;
 
 bool systemWorking = true;
+struct bme280_dev bme;
+struct identifier id;
 
 void setStatus(double intensity) {
     if (intensity >= 0) softPwmWrite(HEATER, intensity);
@@ -38,34 +39,41 @@ void stop(int signal) {
 }
 
 void cleanSystemState(Uart uart) {
+    uart.receive();
     uart.setSystemState(0);
     uart.setSystemStatus(0);
     uart.sendTimerSignal(0);
 }
 
 void heatUp(Uart uart) {
-    float referenceTemp;
-    float internalTemp;
+    // uart.receive();
+    // uart.receive();
+    float referenceTemp = uart.getReferenceTemp();
+    float internalTemp = uart.getInternalTemp();
 
     setStatus(100.0);
-    while(systemWorking && referenceTemp > internalTemp + (referenceTemp / 20)) {
-        //referenceTemp = uart.getReferenceTemp();
+    printf("Referencia: %f\tInterna: %f\tConta: %f\n", referenceTemp, internalTemp, referenceTemp - referenceTemp / 20);
+    while(systemWorking && internalTemp <= referenceTemp - referenceTemp / 5) {
+        referenceTemp = uart.getReferenceTemp();
         internalTemp = uart.getInternalTemp();
+        uart.sendControlSignal(100);
         sleep(1);
     }
 
 }
 
 void coolDown(Uart uart) {
-    //float referenceTemp;
-    float internalTemp;
+    double externalTemp = 25;//= bmeGetTemp(&bme);
+    float internalTemp = uart.getInternalTemp();
 
     setStatus(-100.0);
-    while(systemWorking && internalTemp > 25) {
-        //referenceTemp = uart.getReferenceTemp();
+    while(systemWorking && internalTemp > externalTemp) {
+        // externalTemp = bmeGetTemp(&bme);
         internalTemp = uart.getInternalTemp();
+        uart.sendControlSignal(-100);
         sleep(1);
     }
+    uart.setSystemStatus(0);
 }
 
 
@@ -80,11 +88,14 @@ void temperatureControl(Uart uart, Pid pid, bool isSystemRunning, int *timer) {
 
         pid.set_reference_temp(referenceTemp);
         intensity = pid.pid_control(internalTemp);
-        printf("Referencia %f\tInterna: %f\tSinal de controle: %lf\n", referenceTemp, internalTemp, intensity);
+        printf("Referencia %f\tInterna: %f\tSinal de controle: %lf\tTimer: %d\n", referenceTemp, internalTemp, intensity, *timer);
         setStatus(intensity);
         uart.sendControlSignal((int) intensity);
+        if(*timer % 60 == 0) uart.sendTimerSignal(*timer/60);
         sleep(1);
+        *timer -= 1;
     }
+    uart.sendTimerSignal(0);
 }
 
 void watchUserInputs(int *userInput, Uart uart, bool *isSystemRunning) {
@@ -104,24 +115,28 @@ int main(void) {
     signal(SIGINT, stop);
 
     uart.setup();
-    pid.setup(50.0, 0.2, 300.0);
+    pid.setup(50.0, 0.2, 400.0);
+	// bme280Init("/dev/i2c-1", &bme, &id);
     if (wiringPiSetup() != -1) pinSetup();
     cleanSystemState(uart);
 
     while(systemWorking) {
-        printf("Switch\n");
         switch(uart.getUserInput()) {
             case 1:
-                printf("Case 1\n");
-                isSystemON = true;
-                uart.setSystemState(1);
+                if(!isSystemON) {
+                    printf("Case 1\n");
+                    isSystemON = true;
+                    uart.setSystemState(1);
+                }
                 break;
             case 2:
-                printf("Case 2\n");
-                isSystemON = false;
-                uart.setSystemState(0);
-                isSystemRunning = false;
-                uart.setSystemStatus(0);
+                if(isSystemON) {
+                    printf("Case 2\n");
+                    isSystemON = false;
+                    uart.setSystemState(0);
+                    isSystemRunning = false;
+                    uart.setSystemStatus(0);
+                }
                 break;
             case 3: 
                 printf("Case 3\n");
