@@ -8,7 +8,7 @@
 #include <termios.h>
 
 
-const int READ_MSG_SIZE = 100;
+const int READ_MSG_SIZE = 7;
 
 Uart::Uart() {
     uart0_filestream = -1;
@@ -49,14 +49,6 @@ void Uart::receive() {
     }
 }
 
-void Uart::receive(int msgSize) {
-    int bytes_read = read(uart0_filestream, (void *)read_buffer, msgSize);
-    if (bytes_read <= 0) {
-        printf("Failed to receive data\n");
-        return;
-    }
-}
-
 void Uart::stop() {
     close(uart0_filestream);
 }
@@ -89,7 +81,7 @@ int Uart::getUserInput() {
 
     send(9, modbus.userInputMessage());
     usleep(10000);
-    receive(9);
+    receive();
 
     memcpy(&userInput, &this->read_buffer[3], sizeof(int));
     return userInput;
