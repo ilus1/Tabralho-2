@@ -51,3 +51,10 @@ make run
 # 3. Testes
 
 ## Pré-Aquecimento
+![Pré-Aquecimento](/imgs/Pre-Aquecimento.png)
+
+## Controle de temperatura com temporizador
+![Funcionamento](/imgs/Funcionamento.png)
+
+## Resfriamento
+![Resfriamento](/imgs/Resfriamento.png)
