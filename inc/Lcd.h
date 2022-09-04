@@ -23,6 +23,7 @@ class Lcd {
     void typeReferenceTemp(float referenceTemp);
     void setHeaderScreen(char *message);
     void showHeatingProcess(float referenceTemp, float internalTemp);
+    void showMenuState(float referenceTemp, int timer);
     void clearLcd();
     void setCursorPosition(int position);
     void sendByte(int bits, int mode);

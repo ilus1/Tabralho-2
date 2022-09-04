@@ -75,6 +75,12 @@ void Lcd::showHeatingProcess(float referenceTemp, float internalTemp) {
     typeInternalTemp(internalTemp);
 }
 
+void Lcd::showMenuState(float referenceTemp, int timer) {
+    setCursorPosition(LINE2_START);
+    typeReferenceTemp(referenceTemp);
+    typeTimer(timer);
+}
+
 void Lcd::clearLcd(void)   {
   sendByte(0x01, COMMAND);
   sendByte(0x02, COMMAND);

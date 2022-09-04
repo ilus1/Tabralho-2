@@ -137,8 +137,7 @@ int main(void) {
                     lcd.setHeaderScreen("~ Aguardando");
                     uart.setSystemState(1);
                 }
-                lcd.typeReferenceTemp(uart.getReferenceTemp());
-                lcd.typeTimer(timer);
+                lcd.showMenuState(uart.getReferenceTemp(), timer);
                 break;
             case 2:
                 if (isSystemOn) {
