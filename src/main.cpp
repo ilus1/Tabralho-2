@@ -7,13 +7,13 @@
 #include "../inc/Uart.h"
 #include "../inc/Pid.h"
 #include "../inc/bme280.h"
-#include "../inc/linux_userspace.h"
+#include "../inc/AmbientTempSensor.h"
 
 const int HEATER = 4;
 const int FAN = 5;
 
 bool systemWorking = true;
-// struct bme280_dev bme;
+struct bme280_dev bme;
 struct identifier id;
 
 void setStatus(double intensity) {
@@ -45,28 +45,30 @@ void cleanSystemState(Uart uart) {
     uart.sendTimerSignal(0);
 }
 
-void heatUp(Uart uart) {
+void heatUp(Uart uart, Pid pid) {
     float referenceTemp = uart.getReferenceTemp();
     float internalTemp = uart.getInternalTemp();
+    double intensity;
 
     setStatus(100.0);
-    printf("Referencia: %f\tInterna: %f\tConta: %f\n", uart.getReferenceTemp(), uart.getInternalTemp(), uart.getReferenceTemp() - referenceTemp / 20);
-    while(systemWorking && internalTemp <= referenceTemp - referenceTemp / 5) {
+    while(systemWorking && internalTemp <= referenceTemp - referenceTemp / 20) {
         referenceTemp = uart.getReferenceTemp();
         internalTemp = uart.getInternalTemp();
-        uart.sendControlSignal(100);
+
+        pid.set_reference_temp(referenceTemp);
+        intensity = pid.pid_control(internalTemp);
+        uart.sendControlSignal((int) intensity);
         sleep(1);
     }
-
 }
 
-void coolDown(Uart uart) {
-    double externalTemp = 25;//= bmeGetTemp(&bme);
+void coolDown(Uart uart, AmbientTempSensor ambientSensor) {
+    double ambientTemp = ambientSensor.getAmbientTemp(&bme);
     float internalTemp = uart.getInternalTemp();
-
+    printf("temp ambiente: %lf\n", ambientTemp);
     setStatus(-100.0);
-    while(systemWorking && internalTemp > externalTemp) {
-        //externalTemp = bmeGetTemp(&bme);
+    while(systemWorking && internalTemp > ambientTemp) {
+        ambientTemp = ambientSensor.getAmbientTemp(&bme);
         internalTemp = uart.getInternalTemp();
         uart.sendControlSignal(-100);
         sleep(1);
@@ -100,47 +102,64 @@ void temperatureControl(Uart uart, Pid pid, int *timer) {
 int main(void) {
     Uart uart;
     Pid pid;
+    AmbientTempSensor ambientSensor = AmbientTempSensor("/dev/i2c-1", &bme, &id);
     int timer = 0;
+    bool isSystemOn = false, isSystemRunning = false;
     signal(SIGINT, stop);
 
     uart.setup();
     pid.setup(50.0, 0.2, 400.0);
-	//bme280Init("/dev/i2c-1", &bme, &id);
     if (wiringPiSetup() != -1) pinSetup();
     cleanSystemState(uart);
-
+  
     while(systemWorking) {
         switch(uart.getUserInput()) {
             case 1:
-                printf("Case 1\n");
-                uart.setSystemState(1);
+                if (!isSystemOn) {
+                    printf("Case 1\n");
+                    isSystemOn = true;
+                    uart.setSystemState(1);
+                }
                 break;
             case 2:
-                printf("Case 2\n");
-                uart.setSystemState(0);
-                uart.setSystemStatus(0);
+                if (isSystemOn) {
+                    printf("Case 2\n");
+                    isSystemOn = false;
+                    uart.setSystemState(0);
+                    uart.setSystemStatus(0);
+                }
                 break;
-            case 3: 
-                printf("Case 3\n");
-                uart.setSystemStatus(1);
-                heatUp(uart);
-                temperatureControl(uart, pid, &timer);
-                coolDown(uart);
+            case 3:
+                if (!isSystemRunning) {
+                    printf("Case 3\n");
+                    isSystemRunning = true;
+                    uart.setSystemStatus(1);
+                    heatUp(uart, pid);
+                    temperatureControl(uart, pid, &timer);
+                    coolDown(uart, ambientSensor);
+                }
                 break;
             case 4:
-                printf("Case 4\n");
-                uart.setSystemStatus(0);
+                if(isSystemRunning) {
+                    printf("Case 4\n");
+                    isSystemRunning = false;
+                    uart.setSystemStatus(0);
+                }
                 break;
             case 5:
-                printf("Case 5\n");
-                timer += 60;
-                uart.sendTimerSignal(timer/60);
+                if(isSystemOn) {
+                    printf("Case 5\n");
+                    timer += 60;
+                    uart.sendTimerSignal(timer/60);
+                }
                 break;
             case 6:
-                printf("Case 6\n");
-                if (timer <= 60) timer = 0;
-                else timer -= 60;
-                uart.sendTimerSignal(timer/60);
+                if(isSystemOn) {
+                    printf("Case 6\n");
+                    if (timer <= 60) timer = 0;
+                    else timer -= 60;
+                    uart.sendTimerSignal(timer/60);
+                }
                 break;
             default:
                 usleep(100000);

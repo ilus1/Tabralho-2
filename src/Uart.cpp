@@ -43,7 +43,7 @@ void Uart::send(int msgSize, unsigned char *message) {
 }
 
 int Uart::receive() {
-    usleep(100000);
+    usleep(50000);
     int bytes_read = read(uart0_filestream, (void *)read_buffer, READ_MSG_SIZE);
     if (bytes_read <= 0) {
         printf("Failed to receive data\n");
