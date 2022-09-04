@@ -80,7 +80,7 @@ void Lcd::showHeatingProcess(float referenceTemp, float internalTemp) {
 
 void Lcd::showCoolingProcess(float ambientTemp, float internalTemp) {
     setCursorPosition(LINE2_START);
-    typeAmbientTemp(referenceTemp);
+    typeAmbientTemp(ambientTemp);
     typeInternalTemp(internalTemp);
 }
 
