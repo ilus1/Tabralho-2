@@ -7,7 +7,7 @@ const int I2C_ADDR = 0x27;
 const int CHARACTER = 1;
 const int COMMAND = 0;
 
-const int LINE1_START = 0x7F;
+const int LINE1_START = 0x80;
 const int LINE2_START = 0xC0;
 
 const int BACKLIGHT_ON = 0x08;
@@ -32,7 +32,7 @@ void Lcd::typeFloat(float number) {
 
 void Lcd::typeInt(int number) {
     char buffer[20];
-    sprintf(buffer, "%d", number);
+    sprintf(buffer, "%2d", number);
     typeLine(buffer);
 }
 
@@ -44,21 +44,27 @@ void Lcd::typeLine(const char *message) {
     while (*message) sendByte(*(message++), CHARACTER);
 }
 
-void Lcd::typeTimer(int timer) {
-    setCursorPosition(LINE1_START);
+void Lcd::typeTimer(int timer, bool line1) {
+    if(line1) setCursorPosition(LINE1_START);
+    typeLine("Tempo:");
     typeInt(timer / 60);
     typeChar(':');
     typeInt(timer % 60);
 }
 
 void Lcd::typeInternalTemp(float internalTemp) {
-    typeLine("TI: ");
+    typeLine(" TI:");
     typeFloat(internalTemp);
 }
 
 void Lcd::typeReferenceTemp(float referenceTemp) {
-    typeLine("TR: ");
-    typeFloat(referenceTemp);
+    typeLine("TR:");
+    typeInt((int)referenceTemp);
+}
+
+void Lcd::typeAmbientTemp(float ambientTemp) {
+    typeLine(" TA:");
+    typeFloat(ambientTemp);
 }
 
 void Lcd::setHeaderScreen(char *message){
@@ -72,10 +78,17 @@ void Lcd::showHeatingProcess(float referenceTemp, float internalTemp) {
     typeInternalTemp(internalTemp);
 }
 
+void Lcd::showCoolingProcess(float ambientTemp, float internalTemp) {
+    setCursorPosition(LINE2_START);
+    typeAmbientTemp(referenceTemp);
+    typeInternalTemp(internalTemp);
+}
+
+
 void Lcd::showMenuState(float referenceTemp, int timer) {
     setCursorPosition(LINE2_START);
     typeReferenceTemp(referenceTemp);
-    typeTimer(timer);
+    typeTimer(timer, false);
 }
 
 void Lcd::clearLcd(void)   {

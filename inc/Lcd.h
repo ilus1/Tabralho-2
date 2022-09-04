@@ -17,11 +17,13 @@ class Lcd {
     void typeInt(int number);
     void typeChar(char character);
     void typeLine(const char *message);
-    void typeTimer(int timer);
+    void typeTimer(int timer, bool line1);
     void typeInternalTemp(float internalTemp);
     void typeReferenceTemp(float referenceTemp);
+    void typeAmbientTemp(float ambientTemp);
     void setHeaderScreen(char *message);
     void showHeatingProcess(float referenceTemp, float internalTemp);
+    void showCoolingProcess(float ambientTemp,float internalTemp);
     void showMenuState(float referenceTemp, int timer);
     void clearLcd();
     void setCursorPosition(int position);

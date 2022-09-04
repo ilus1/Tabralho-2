@@ -44,6 +44,7 @@ void stop(int signal) {
 }
 
 void cleanSystemState(Uart uart, Lcd lcd) {
+    setStatus(0);
     lcd.clearLcd();
     uart.receive();
     uart.setSystemState(0);
@@ -58,15 +59,19 @@ void saveCSV(bool *isSystemOn, Uart uart, AmbientTempSensor sensor, double *pid)
 		perror("Error");
 		systemWorking = false;
 	}
-	while(systemWorking && *isSystemOn){
-		time_t now = time(NULL);
-		timenow = gmtime(&now);
-		char dateString[20];
-		char timeString[20];
-		strftime(dateString, sizeof(dateString), "%Y-%m-%d", timenow);
-		strftime(timeString, sizeof(timeString), "%H:%M:%S", timenow);
-		fprintf(csv, "%s, %s, %f, %f, %f, %.2lf\n", dateString, timeString, uart.getInternalTemp(), sensor.getAmbientTemp(&bme), uart.getReferenceTemp(), *pid);
-		sleep(1);
+    printf("thread");
+    while(systemWorking) {
+        while(systemWorking && *isSystemOn) {
+            time_t now = time(NULL);
+            timenow = gmtime(&now);
+            char dateString[20];
+            char timeString[20];
+            strftime(dateString, sizeof(dateString), "%Y-%m-%d", timenow);
+            strftime(timeString, sizeof(timeString), "%H:%M:%S", timenow);
+            fprintf(csv, "%s, %s, %f, %f, %f, %.2lf\n", dateString, timeString, uart.getInternalTemp(), sensor.getAmbientTemp(&bme), uart.getReferenceTemp(), *pid);
+            printf("%s, %s, %f, %f, %f, %.2lf\n", dateString, timeString, uart.getInternalTemp(), sensor.getAmbientTemp(&bme), uart.getReferenceTemp(), *pid);
+            sleep(1);
+        }
 	}
 }
 
@@ -102,6 +107,7 @@ void coolDown(Uart uart, AmbientTempSensor ambientSensor, Lcd lcd, double *inten
         ambientTemp = ambientSensor.getAmbientTemp(&bme);
         internalTemp = uart.getInternalTemp();
 
+        lcd.showCoolingProcess(ambientTemp, internalTemp);
         uart.sendControlSignal((int) *intensity);
 
         sleep(1);
@@ -122,6 +128,7 @@ void temperatureControl(Uart uart, Pid pid, int *timer, Lcd lcd, double *intensi
         referenceTemp = uart.getReferenceTemp();
         internalTemp = uart.getInternalTemp();
 
+        lcd.typeTimer(*timer, true);
         lcd.showHeatingProcess(referenceTemp, internalTemp);
         pid.set_reference_temp(referenceTemp);
         *intensity = pid.pid_control(internalTemp);
@@ -143,10 +150,10 @@ int main(void) {
     Lcd lcd;
     int timer = 0;
     bool isSystemOn = false, isSystemRunning = false;
-    double intensity;
+    double intensity = 0;
     AmbientTempSensor ambientSensor = AmbientTempSensor("/dev/i2c-1", &bme, &id);
     signal(SIGINT, stop);
-    std::thread logger(saveCSV, &isSystemOn, uart, ambientSensor, &intensity);
+    //std::thread logger(saveCSV, &isSystemOn, uart, ambientSensor, &intensity);
 
     uart.setup();
     pid.setup(50.0, 0.2, 400.0);
@@ -206,6 +213,7 @@ int main(void) {
                 }
                 break;
             default:
+                if (isSystemOn) lcd.showMenuState(uart.getReferenceTemp(), timer);
                 usleep(100000);
         }
     }

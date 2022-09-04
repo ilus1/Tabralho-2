@@ -37,7 +37,6 @@ void Uart::setup() {
 void Uart::send(int msgSize, unsigned char *message) {
     int bytes_written = write(uart0_filestream, message, msgSize);
     if (bytes_written <= 0) {
-        printf("Failed to send data\n");
         return;
     }
 }
@@ -46,7 +45,6 @@ int Uart::receive() {
     usleep(50000);
     int bytes_read = read(uart0_filestream, (void *)read_buffer, READ_MSG_SIZE);
     if (bytes_read <= 0) {
-        printf("Failed to receive data\n");
         return 0;
     }
     return bytes_read;
