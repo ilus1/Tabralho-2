@@ -13,7 +13,7 @@ const int HEATER = 4;
 const int FAN = 5;
 
 bool systemWorking = true;
-struct bme280_dev bme;
+// struct bme280_dev bme;
 struct identifier id;
 
 void setStatus(double intensity) {
@@ -47,11 +47,10 @@ void cleanSystemState(Uart uart) {
 
 void heatUp(Uart uart) {
     float referenceTemp = uart.getReferenceTemp();
-    while (referenceTemp == 0) uart.getReferenceTemp();
     float internalTemp = uart.getInternalTemp();
 
     setStatus(100.0);
-    printf("Referencia: %f\tInterna: %f\tConta: %f\n", referenceTemp, internalTemp, referenceTemp - referenceTemp / 20);
+    printf("Referencia: %f\tInterna: %f\tConta: %f\n", uart.getReferenceTemp(), uart.getInternalTemp(), uart.getReferenceTemp() - referenceTemp / 20);
     while(systemWorking && internalTemp <= referenceTemp - referenceTemp / 5) {
         referenceTemp = uart.getReferenceTemp();
         internalTemp = uart.getInternalTemp();
@@ -67,7 +66,7 @@ void coolDown(Uart uart) {
 
     setStatus(-100.0);
     while(systemWorking && internalTemp > externalTemp) {
-        // externalTemp = bmeGetTemp(&bme);
+        //externalTemp = bmeGetTemp(&bme);
         internalTemp = uart.getInternalTemp();
         uart.sendControlSignal(-100);
         sleep(1);
@@ -76,12 +75,12 @@ void coolDown(Uart uart) {
 }
 
 
-void temperatureControl(Uart uart, Pid pid, bool isSystemRunning, int *timer) {
+void temperatureControl(Uart uart, Pid pid, int *timer) {
     float referenceTemp;
     float internalTemp;
     double intensity;
 
-    while(systemWorking && isSystemRunning && *timer > 0) {
+    while(systemWorking && *timer > 0) {
         referenceTemp = uart.getReferenceTemp();
         internalTemp = uart.getInternalTemp();
 
@@ -101,13 +100,12 @@ void temperatureControl(Uart uart, Pid pid, bool isSystemRunning, int *timer) {
 int main(void) {
     Uart uart;
     Pid pid;
-    bool isSystemON = false, isSystemRunning = false;
     int timer = 0;
     signal(SIGINT, stop);
 
     uart.setup();
     pid.setup(50.0, 0.2, 400.0);
-	// bme280Init("/dev/i2c-1", &bme, &id);
+	//bme280Init("/dev/i2c-1", &bme, &id);
     if (wiringPiSetup() != -1) pinSetup();
     cleanSystemState(uart);
 
@@ -115,27 +113,22 @@ int main(void) {
         switch(uart.getUserInput()) {
             case 1:
                 printf("Case 1\n");
-                isSystemON = true;
                 uart.setSystemState(1);
                 break;
             case 2:
                 printf("Case 2\n");
-                isSystemON = false;
                 uart.setSystemState(0);
-                isSystemRunning = false;
                 uart.setSystemStatus(0);
                 break;
             case 3: 
                 printf("Case 3\n");
-                isSystemRunning = true;
                 uart.setSystemStatus(1);
                 heatUp(uart);
-                temperatureControl(uart, pid, isSystemRunning, &timer);
+                temperatureControl(uart, pid, &timer);
                 coolDown(uart);
                 break;
             case 4:
                 printf("Case 4\n");
-                isSystemRunning = false;
                 uart.setSystemStatus(0);
                 break;
             case 5:

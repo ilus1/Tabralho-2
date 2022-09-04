@@ -20,7 +20,7 @@
  * \include linux_userspace.c
  */
 
-#include "linux_userspace.h"
+#include "../inc/linux_userspace.h"
 
 /*!
  * @brief This function reading the sensor's registers through I2C bus.

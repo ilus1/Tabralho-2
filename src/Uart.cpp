@@ -52,6 +52,10 @@ int Uart::receive() {
     return bytes_read;
 }
 
+bool Uart::isCorrectTemperature(unsigned char sCode) {
+    return sCode == read_buffer[2];
+}
+
 void Uart::stop() {
     close(uart0_filestream);
 }
@@ -62,6 +66,8 @@ float Uart::getInternalTemp() {
 
     this->send(9, message);
     this->receive();
+    if (!isCorrectTemperature(message[2]))
+        return getInternalTemp();
 
     memcpy(&internalTemp, &this->read_buffer[3], sizeof(float));
     return internalTemp;
@@ -69,9 +75,12 @@ float Uart::getInternalTemp() {
 
 float Uart::getReferenceTemp() {
     float referenceTemp;
+    unsigned char *message = modbus.referenceTempMessage();
 
-    send(9, modbus.referenceTempMessage());
+    send(9, message);
     receive();
+    if (!isCorrectTemperature(message[2]))
+        return getReferenceTemp();
 
     memcpy(&referenceTemp, &this->read_buffer[3], sizeof(float));
     return referenceTemp;

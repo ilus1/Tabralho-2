@@ -33,6 +33,7 @@ class Uart {
     void setSystemState(unsigned char state);
     void setSystemStatus(unsigned char status);
     void sendTimerSignal(int timer);
+    bool isCorrectTemperature(unsigned char sCode);
 };
 
 #endif
