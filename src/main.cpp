@@ -137,7 +137,7 @@ void temperatureControl(Uart uart, Pid pid, int *timer, Lcd lcd, double *intensi
         uart.sendControlSignal((int) *intensity);
         if(*timer % 60 == 0) uart.sendTimerSignal(*timer/60);
 
-        sleep(1);
+        usleep(500000);
     }
 
     uart.sendTimerSignal(0);

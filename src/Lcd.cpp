@@ -32,7 +32,7 @@ void Lcd::typeFloat(float number) {
 
 void Lcd::typeInt(int number) {
     char buffer[20];
-    sprintf(buffer, "%2d", number);
+    sprintf(buffer, "%02d", number);
     typeLine(buffer);
 }
 
@@ -63,7 +63,7 @@ void Lcd::typeReferenceTemp(float referenceTemp) {
 }
 
 void Lcd::typeAmbientTemp(float ambientTemp) {
-    typeLine(" TA:");
+    typeLine("TA:");
     typeFloat(ambientTemp);
 }
 

@@ -58,3 +58,7 @@ make run
 
 ## Resfriamento
 ![Resfriamento](/imgs/Resfriamento.png)
+
+# 4. Observações
+
+A leitura de inputs do usuário (através dos botões da dashboard) não são identificadas todas as vezes, então é necessário esperar o dashboard atualizar e se necesssário pressionar o botão novamente.
