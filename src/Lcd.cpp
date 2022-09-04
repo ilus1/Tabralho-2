@@ -15,7 +15,6 @@ const int INTERNAL_TEMP_POSITION = 0xC4;
 const int BACKLIGHT_ON = 0x08;
 
 
-
 Lcd::Lcd() {
     fd = wiringPiI2CSetup(I2C_ADDR);
     sendByte(0x33, COMMAND);
