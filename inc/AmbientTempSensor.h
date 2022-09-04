@@ -18,9 +18,6 @@ struct identifier {
     int8_t fd;
 };
 
-int8_t user_i2c_read(uint8_t reg_addr, uint8_t *data, uint32_t len, void *intf_ptr);
-int8_t user_i2c_write(uint8_t reg_addr, const uint8_t *data, uint32_t len, void *intf_ptr);
-void user_delay_us(uint32_t period, void *intf_ptr);
 
 class AmbientTempSensor {
     private:
@@ -29,6 +26,10 @@ class AmbientTempSensor {
     public:
     AmbientTempSensor(char *name, struct bme280_dev *dev, struct identifier *id);
     double getAmbientTemp(struct bme280_dev *dev);
+    static int8_t user_i2c_read(uint8_t reg_addr, uint8_t *data, uint32_t len, void *intf_ptr);
+    static int8_t user_i2c_write(uint8_t reg_addr, const uint8_t *data, uint32_t len, void *intf_ptr);
+    static void user_delay_us(uint32_t period, void *intf_ptr);
+
 };
 
 #endif

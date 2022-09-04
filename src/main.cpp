@@ -111,7 +111,7 @@ int main(void) {
     pid.setup(50.0, 0.2, 400.0);
     if (wiringPiSetup() != -1) pinSetup();
     cleanSystemState(uart);
-  
+    
     while(systemWorking) {
         switch(uart.getUserInput()) {
             case 1:
