@@ -7,10 +7,8 @@ const int I2C_ADDR = 0x27;
 const int CHARACTER = 1;
 const int COMMAND = 0;
 
-const int LINE1_START = 0x80;
+const int LINE1_START = 0x7F;
 const int LINE2_START = 0xC0;
-
-const int INTERNAL_TEMP_POSITION = 0xC4;
 
 const int BACKLIGHT_ON = 0x08;
 
@@ -86,7 +84,7 @@ void Lcd::clearLcd(void)   {
 }
 
 void Lcd::setCursorPosition(int position)   {
-  sendByte(position, CHARACTER);
+  sendByte(position, COMMAND);
 }
 
 void Lcd::sendByte(int bits, int mode)   {

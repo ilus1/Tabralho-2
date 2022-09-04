@@ -10,7 +10,6 @@ class Lcd {
     private:
     int fd;
 
-
     public:
     Lcd();
     void cursorLoc(int pos);

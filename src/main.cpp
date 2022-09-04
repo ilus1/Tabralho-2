@@ -20,8 +20,10 @@ struct bme280_dev bme;
 struct identifier id;
 
 void setStatus(double intensity) {
-    if (intensity >= 0) softPwmWrite(HEATER, intensity);
-    else {
+    if (intensity >= 0) {
+        softPwmWrite(HEATER, intensity);
+        softPwmWrite(FAN, 0);
+    } else {
         intensity > -40 ? intensity = 40: intensity *= -1;
         softPwmWrite(FAN, intensity);
         softPwmWrite(HEATER, 0);
@@ -51,7 +53,7 @@ void cleanSystemState(Uart uart, Lcd lcd) {
 
 void saveCSV(bool *isSystemOn, Uart uart, AmbientTempSensor sensor, double *pid){
 	struct tm *timenow;
-    FILE* csv = fopen("log.csv", "w");
+    FILE* csv = fopen("../log.csv", "w");
 	if (csv == NULL){
 		perror("Error");
 		systemWorking = false;
