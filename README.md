@@ -1,64 +1,68 @@
-# 1. O Trabalho
+# 1. The Assignment
 
-Este trabalho tem por objetivo a implementação de um sistema (que simula) o controle de um Air Fryer com controle digital.
+This assignment aims to implement a system that simulates the control of a digital Air Fryer.
 
-O trablho envolve o desenvolvimento do software que efetua o controle completo da AirFyer, incluindo:
-* Ligar/desligar o equipamento;
-* Controlar a temperatura;
-* Temporização e diferentes modos de alimentos.
+The work involves the development of software that performs the complete control of the AirFryer, including:
+* Turning the equipment on/off;
+* Controlling the temperature;
+* Timing and different food modes.
 
-Especificamente a temperatura do forno é controlada à partir de dois elementos atuadores:
+Specifically, the oven temperature is controlled by two actuating elements:
 
-* Resistor de potência de 15 Watts utilizado para aumentar temperatura;
-* Ventoinha que puxa o ar externo (temperatura ambiente) para reduzir a temperatura do sistema.
+* A 15 Watts power resistor used to increase temperature;
+* A fan that pulls external air (room temperature) to reduce the system temperature.
 
-Os comandos do usuário do sistema para definir a temperatura desejada serão controlados de três maneiras:
+The user's commands to set the desired temperature will be controlled in three ways:
 
-* Através de botões no painel de controle (Via UART);
-* Através de entrada de teclado no terminal;
-* Seguindo os tempo e temperaturas pré-definidas para cada tipo de alimento.
+* Through buttons on the control panel (Via UART);
+* Through keyboard input in the terminal;
+* Following the pre-defined time and temperatures for each type of food.
 
-Botões de Entrada
+Input Buttons
 
-* Liga/Desliga  
-* Inicia/Cancela  
-* Temperatura +/- (A cada 5 ˚C)  
-* Tempo +/- (Minutos)
+* On/Off  
+* Start/Cancel  
+* Temperature +/- (Every 5 ˚C)  
+* Time +/- (Minutes)
 
 
 
-## 2. Execução do código
+## 2. Code Execution
 
-1) Acessar a placa raspberry pi desejada:
+1) Access the desired Raspberry Pi board:
+
+```sh 
+ssh "username"@"board_ip"
+
 
 ```sh 
 ssh "nome_de_usuario"@"ip_da_placa"
 ```
 
-2) Após a liberação de acesso à placa, clonar o repositório do projeto:
+2) After access to the board is granted, clone the project repository:
 
 ```sh 
 git@github.com:ilus1/Tabralho-2.git
 ```
 
-3) É possivel executar o programa diretamente através do comando:
+3) The program can be run directly with the command:
 
 ```sh 
 make run
 ```
 
 
-# 3. Testes
+# 3. Tests
 
-## Pré-Aquecimento
+## Pre-heating
 ![Pré-Aquecimento](/imgs/Pre-Aquecimento.png)
 
-## Controle de temperatura com temporizador
+## Temperature control with timer
 ![Funcionamento](/imgs/Funcionamento.png)
 
-## Resfriamento
+## Cooling
 ![Resfriamento](/imgs/Resfriamento.png)
 
-# 4. Observações
+# 4. Notes
 
-A leitura de inputs do usuário (através dos botões da dashboard) não são identificadas todas as vezes, então é necessário esperar o dashboard atualizar e se necesssário pressionar o botão novamente.
+The reading of user inputs (through the dashboard buttons) is not always identified, so it is necessary to wait for the dashboard to update and, if necessary, press the button again.
